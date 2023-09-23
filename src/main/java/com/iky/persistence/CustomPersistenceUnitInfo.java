@@ -15,6 +15,20 @@ import java.util.List;
 import java.util.Properties;
 
 public class CustomPersistenceUnitInfo implements PersistenceUnitInfo {
+    private final HikariDataSource ds = new HikariDataSource();
+    public CustomPersistenceUnitInfo(){
+        Properties properties = new Properties();
+        try {
+            InputStream input = CustomPersistenceUnitInfo.class
+                    .getClassLoader().getResourceAsStream(("app.properties"));
+            properties.load(input);
+            ds.setJdbcUrl((String) properties.get("datasource_url"));
+            ds.setUsername((String) properties.get("datasource_username"));
+            ds.setPassword((String) properties.get("datasource_password"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public String getPersistenceUnitName() {
@@ -33,19 +47,6 @@ public class CustomPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public DataSource getJtaDataSource() {
-        HikariDataSource ds = new HikariDataSource();
-        Properties properties = new Properties();
-        InputStream input = null;
-        try {
-            input = CustomPersistenceUnitInfo.class
-                    .getClassLoader().getResourceAsStream(("app.properties"));
-            properties.load(input);
-            ds.setJdbcUrl((String) properties.get("datasource_url"));
-            ds.setUsername((String) properties.get("datasource_username"));
-            ds.setPassword((String) properties.get("datasource_password"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return ds;
     }
 
