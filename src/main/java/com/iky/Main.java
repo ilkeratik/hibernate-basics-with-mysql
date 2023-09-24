@@ -14,10 +14,13 @@ import java.util.Properties;
 public class Main {
     public static void main(String[] args) {
         try (EntityManager em = createProgrammaticEM()) {
+
+            getPersons(em).forEach(System.out::println);
+
             em.getTransaction().begin();
 //            createPersons().forEach(em::persist);
+//            updatePerson(em);
 //            deletePerson(em);
-            getPersons(em).forEach(System.out::println);
             em.getTransaction().commit();
         }
     }
@@ -41,7 +44,11 @@ public class Main {
         em.remove(Objects.requireNonNull(toDelete));
     }
 
-    public static List getPersons(EntityManager em){
+    public static void updatePerson(EntityManager em){
+        Person toUpdate = em.find(Person.class, 12);
+        toUpdate.setName("alina");
+    }
+    public static List<Person> getPersons(EntityManager em){
         return em.createQuery("select p from Person p").getResultList();
     }
 
