@@ -13,11 +13,11 @@ import java.util.Properties;
 
 public class Main {
     public static void main(String[] args) {
-        try (EntityManager em = createEMFromPersistenceXML()) {
+        try (EntityManager em = createProgrammaticEM()) {
             em.getTransaction().begin();
-            createPersons().forEach(em::persist);
+//            createPersons().forEach(em::persist);
 //            deletePerson(em);
-//            getPersons(em).forEach(System.out::println);
+            getPersons(em).forEach(System.out::println);
             em.getTransaction().commit();
         }
     }

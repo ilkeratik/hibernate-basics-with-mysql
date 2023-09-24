@@ -6,6 +6,7 @@ import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.persistence.spi.PersistenceUnitTransactionType;
+import org.reflections.Reflections;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -13,9 +14,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
+import static org.reflections.scanners.Scanners.SubTypes;
 
 public class CustomPersistenceUnitInfo implements PersistenceUnitInfo {
     private final HikariDataSource ds = new HikariDataSource();
+    private final List<String> entityClasses;
     public CustomPersistenceUnitInfo(){
         Properties properties = new Properties();
         try {
@@ -28,6 +31,9 @@ public class CustomPersistenceUnitInfo implements PersistenceUnitInfo {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        // retrieve entity classes dynamically
+        Reflections reflections = new Reflections("com.iky.entity", SubTypes.filterResultsBy( s -> true));
+        entityClasses = reflections.getSubTypesOf(Object.class).stream().map(Class::getCanonicalName).toList();
     }
 
     @Override
@@ -72,7 +78,7 @@ public class CustomPersistenceUnitInfo implements PersistenceUnitInfo {
 
     @Override
     public List<String> getManagedClassNames() {
-        return List.of("com.iky.entity.Person");
+        return entityClasses;
     }
 
     @Override
