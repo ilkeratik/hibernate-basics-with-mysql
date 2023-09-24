@@ -1,5 +1,6 @@
 package com.iky;
 
+import com.iky.entity.Company;
 import com.iky.entity.Person;
 import com.iky.persistence.CustomPersistenceUnitInfo;
 import jakarta.persistence.EntityManager;
@@ -14,22 +15,29 @@ import java.util.Properties;
 public class Main {
     public static void main(String[] args) {
         try (EntityManager em = createProgrammaticEM()) {
-
-            getPersons(em).forEach(System.out::println);
-
             em.getTransaction().begin();
-//            createPersons().forEach(em::persist);
+
+            createPersons().forEach(em::persist);
+            createCompany(em);
 //            updatePerson(em);
 //            deletePerson(em);
             em.getTransaction().commit();
+
+            System.out.println("Persons:");
+            getPersons(em).forEach(System.out::println);
+
+            System.out.println("========");
+
+            System.out.println(em.find(Company.class,1));
         }
     }
 
     public static EntityManager createProgrammaticEM() {
         Properties props = new Properties();
-        props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
-        EntityManagerFactory fac =
-                new HibernatePersistenceProvider().createContainerEntityManagerFactory(
+        props.put("hibernate.show_sql","true"); // whether to show sql commands executed
+//        props.put("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect"); // set a dialect if needed
+        props.put("hibernate.hbm2ddl.auto","create"); // should we create the tables from entities? only in dev :)
+        EntityManagerFactory fac = new HibernatePersistenceProvider().createContainerEntityManagerFactory(
                         new CustomPersistenceUnitInfo(),props);
         return fac.createEntityManager();
     }
@@ -50,6 +58,14 @@ public class Main {
     }
     public static List<Person> getPersons(EntityManager em){
         return em.createQuery("select p from Person p").getResultList();
+    }
+
+    public static void createCompany(EntityManager em){
+        Company cc = new Company();
+        cc.setName("iky");
+        cc.setFoundingYear(2023);
+        cc.setCEO(em.find(Person.class,1));
+        em.persist(cc);
     }
 
     public static List<Person> createPersons(){
