@@ -1,5 +1,5 @@
 # Hibernate-MySQL-starter 
 
-**Basic usage of Hibernate with MySQL, including creating EntityManager using XML and programmatically, and CRUD operation examples**
+**Learn the basics of using Hibernate, HikariCP with MySQL, including setting up EntityManager with XML and Java configurations. This guide also includes practical examples of CRUD operations.**
 
-*Remember to run your MySQL(if it's local) correctly and set up the JDBC URL, username, and password through app.properties or persistence.xml.*
+*Don't forget to run your and configure MySQL as container or executable, then accordingly set up the JDBC URL, username, and password through app.properties or persistence.xml.*
